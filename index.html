@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PoE2 Research Atlas v0.4</title>
+<title>PoE2 Research Atlas v0.5</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#0c1725">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -58,7 +58,7 @@
 <button id="mobileMenu" type="button" aria-label="Werkzeuge öffnen" aria-controls="sidebar" aria-expanded="false">☰</button>
 <div id="app"><aside id="sidebar">
 <button id="closeMenu" type="button" aria-label="Werkzeuge schließen">✕</button>
-<h1>PoE2 Research Atlas <span class="tiny">v0.4</span></h1><div class="sub">Echte GGG-Knoten · Safari-optimiert · Offline-Cache</div>
+<h1>PoE2 Research Atlas <span class="tiny">v0.5</span></h1><div class="sub">Echte GGG-Knoten · Safari-optimiert · Offline-Cache</div>
 <div class="card"><b>Datenquelle</b><div id="status" class="warn" style="margin-top:6px">Prüfe Offline-Cache …</div>
 <button id="online" class="primary" style="margin-top:9px">GGG-Baum laden</button>
 <button id="download" style="margin-top:7px">Offizielles data.json herunterladen</button>
@@ -72,10 +72,22 @@
 </aside><main id="viewport"><canvas id="tree"></canvas><div id="tooltip"></div><div id="legend"><div><span class="dot" style="background:#62e98b"></span>vergeben</div><div><span class="dot" style="background:#48d8ff"></span>Route</div><div><span class="dot" style="background:#ffd15c"></span>gewählt</div><div><span class="dot" style="background:#ff667a"></span>Notable/Keystone</div></div></main></div>
 <script>
 'use strict';
+
+window.addEventListener('error',e=>{
+  const box=document.getElementById('status');
+  if(box){box.className='err';box.textContent='JavaScript-Fehler: '+(e.message||'Unbekannter Fehler');}
+});
+window.addEventListener('unhandledrejection',e=>{
+  const box=document.getElementById('status');
+  if(box){box.className='err';box.textContent='Fehler: '+(e.reason?.message||String(e.reason));}
+});
+
 const URL='https://raw.githubusercontent.com/grindinggear/poe2-skilltree-export/main/data.json', DB='poe2-research-atlas', STORE='data', KEY='official-tree';
 const $=id=>document.getElementById(id),canvas=$('tree'),ctx=canvas.getContext('2d'),view=$('viewport');
 let data,nodes=new Map,positions=new Map,adj=new Map,bounds,selected,start,target,route=[],camera={x:0,y:0,scale:.05},dragging=false,last={x:0,y:0};
-let owned=new Set(JSON.parse(localStorage.getItem('poe2-owned')||'[]')); const fallbackR=[0,82,162,335,493,662,846,1043,1251,1470,1698,1935];
+let owned=new Set;
+try{owned=new Set(JSON.parse(localStorage.getItem('poe2-owned')||'[]'))}
+catch(_){localStorage.removeItem('poe2-owned');owned=new Set} const fallbackR=[0,82,162,335,493,662,846,1043,1251,1470,1698,1935];
 function status(t,c='warn'){$('status').className=c;$('status').textContent=t} function diag(t){$('diag').textContent=t}
 function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=()=>r.result.createObjectStore(STORE);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
 async function cacheSet(v){const db=await openDB();await new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(v,KEY);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});db.close()}
@@ -97,7 +109,7 @@ function name(n,id){return n.name||n.skill||n.displayName||('Knoten '+id)} funct
 function focus(id,z=.18){const p=positions.get(id);camera.x=p.x;camera.y=p.y;camera.scale=z;draw()} function bfs(a,b){const q=[a],prev=new Map([[a,null]]);for(let i=0;i<q.length;i++){const x=q[i];if(x===b)break;for(const y of adj.get(x)||[]){if(!prev.has(y)){prev.set(y,x);q.push(y)}}}if(!prev.has(b))return[];const p=[];for(let x=b;x!=null;x=prev.get(x))p.push(x);return p.reverse()}
 canvas.onmousedown=e=>{dragging=true;last={x:e.clientX,y:e.clientY};canvas.classList.add('drag')};addEventListener('mouseup',()=>{dragging=false;canvas.classList.remove('drag')});addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(dragging){camera.x-=(e.clientX-last.x)/camera.scale;camera.y-=(e.clientY-last.y)/camera.scale;last={x:e.clientX,y:e.clientY};draw();return}const id=nearest(x,y),tt=$('tooltip');if(id){const n=nodes.get(id);tt.style.display='block';tt.style.left=x+15+'px';tt.style.top=y+15+'px';tt.innerHTML='<b>'+name(n,id)+'</b><br><span class="tiny">'+(Array.isArray(stats(n))?stats(n).slice(0,3).join('<br>'):stats(n))+'</span>'}else tt.style.display='none'});canvas.onclick=e=>{if(Math.hypot(e.clientX-last.x,e.clientY-last.y)>5)return;const r=canvas.getBoundingClientRect(),id=nearest(e.clientX-r.left,e.clientY-r.top);if(id)show(id)};canvas.addEventListener('wheel',e=>{e.preventDefault();const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,b=s2w(x,y),f=e.deltaY<0?1.14:.88;camera.scale=Math.max(.008,Math.min(.9,camera.scale*f));const a=s2w(x,y);camera.x+=b.x-a.x;camera.y+=b.y-a.y;draw()},{passive:false});
 $('search').oninput=()=>{const q=$('search').value.trim().toLowerCase();$('results').innerHTML='';if(q.length<2)return;let c=0;for(const [id,n] of nodes){const hay=(name(n,id)+' '+(Array.isArray(stats(n))?stats(n).join(' '):stats(n))).toLowerCase();if(hay.includes(q)){const d=document.createElement('div');d.className='hit';d.innerHTML='<b>'+name(n,id)+'</b><br><span class="tiny">'+(Array.isArray(stats(n))?stats(n)[0]||'':stats(n))+'</span>';d.onclick=()=>{show(id);focus(id)};$('results').appendChild(d);if(++c>=50)break}}};
-$('online').onclick=async()=>{try{status('Lade offiziellen GGG-Export …','warn');const r=await fetch(URL,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);await ingest(await r.json(),true)}catch(e){status('Online-Laden blockiert. Nutze „data.json herunterladen“ und wähle die Datei anschließend aus.\n'+e.message,'err')}};$('download').onclick=()=>window.open(URL,'_blank');$('file').onchange=e=>e.target.files[0]&&parseFile(e.target.files[0]).catch(e=>status('Import fehlgeschlagen: '+e.message,'err'));const drop=$('drop');['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over')}));['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over')}));drop.addEventListener('drop',e=>e.dataTransfer.files[0]&&parseFile(e.dataTransfer.files[0]).catch(er=>status('Import fehlgeschlagen: '+er.message,'err'));
+$('online').onclick=async()=>{try{status('Lade offiziellen GGG-Export …','warn');const r=await fetch(URL,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);await ingest(await r.json(),true)}catch(e){status('Online-Laden blockiert. Nutze „data.json herunterladen“ und wähle die Datei anschließend aus.\n'+e.message,'err')}};$('download').onclick=()=>window.open(URL,'_blank');$('file').onchange=e=>e.target.files[0]&&parseFile(e.target.files[0]).catch(e=>status('Import fehlgeschlagen: '+e.message,'err'));const drop=$('drop');['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over')}));['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over')}));drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)parseFile(f).catch(er=>status('Import fehlgeschlagen: '+er.message,'err'));});
 $('setStart').onclick=()=>{start=selected;$('startLabel').textContent=name(nodes.get(start),start);$('route').disabled=!target};$('setTarget').onclick=()=>{target=selected;$('targetLabel').textContent=name(nodes.get(target),target);$('route').disabled=!(start||owned.size)};$('toggleOwned').onclick=()=>{owned.has(selected)?owned.delete(selected):owned.add(selected);draw()};$('route').onclick=()=>{let best=[];if(start)best=bfs(start,target);else for(const o of owned){const p=bfs(o,target);if(p.length&&(!best.length||p.length<best.length))best=p}route=best;$('routeInfo').textContent=route.length?`${route.length-1} Schritte · ${route.length} Knoten inkl. Start/Ziel`:'Kein Weg gefunden.';draw()};$('clearRoute').onclick=()=>{route=[];$('routeInfo').textContent='';draw()};$('saveOwned').onclick=()=>{localStorage.setItem('poe2-owned',JSON.stringify([...owned]));status('Passivpfad lokal gespeichert.','ok')};$('clearOwned').onclick=()=>{if(confirm('Markierten Pfad löschen?')){owned.clear();localStorage.removeItem('poe2-owned');draw()}};$('fit').onclick=fit;$('focusOwned').onclick=()=>owned.size&&focus([...owned][0],.15);$('clearCache').onclick=async()=>{await cacheClear();data=null;nodes.clear();ctx.clearRect(0,0,canvas.width,canvas.height);$('search').disabled=true;status('Baum-Cache gelöscht. Importiere data.json erneut.','warn');diag('Noch keine Daten.')};
 (async()=>{resize();try{const d=await cacheGet();if(d){normalize(d);status(`Offline-Cache geladen: ${nodes.size.toLocaleString('de-DE')} Knoten`,'ok')}else status('Kein Offline-Cache. Lade online oder importiere data.json.','warn')}catch(e){status('Cache konnte nicht gelesen werden: '+e.message,'err')}})();
 

@@ -1,4 +1,4 @@
-# PoE2 Research Atlas v0.4
+# PoE2 Research Atlas v0.5
 
 Diese Version ist für GitHub Pages und Safari auf dem iPhone vorbereitet.
 
@@ -48,11 +48,21 @@ https://github.com/grindinggear/poe2-skilltree-export
 
 Safari kann die alte Datei im Cache behalten.
 
-1. Die neuen v0.4-Dateien vollständig ins GitHub-Repository hochladen und bestehende Dateien ersetzen.
+1. Die neuen v0.5-Dateien vollständig ins GitHub-Repository hochladen und bestehende Dateien ersetzen.
 2. Danach die Website in Safari öffnen.
 3. Falls weiterhin die alte Version erscheint:
    - Safari-Tab schließen,
    - Einstellungen → Apps → Safari → Erweitert → Websitedaten,
    - den Eintrag `github.io` beziehungsweise die Atlas-Seite löschen,
    - Seite erneut öffnen.
-4. Oben im Atlas muss `v0.4` stehen.
+4. Oben im Atlas muss `v0.5` stehen.
+
+
+## Fehlerkorrektur v0.5
+
+In v0.4 enthielt der Drag-and-drop-Handler einen JavaScript-Syntaxfehler.
+Dadurch startete die Anwendung überhaupt nicht und blieb bei
+`Prüfe Offline-Cache …` stehen.
+
+Nach dem Upload muss oben `v0.5` stehen. Falls weiterhin v0.4 erscheint,
+die Seite mit Strg+F5 neu laden oder die Websitedaten der GitHub-Pages-Seite löschen.
