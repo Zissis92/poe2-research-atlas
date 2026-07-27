@@ -1,4 +1,4 @@
-# PoE2 Research Atlas v0.3
+# PoE2 Research Atlas v0.4
 
 Diese Version ist für GitHub Pages und Safari auf dem iPhone vorbereitet.
 
@@ -42,3 +42,17 @@ https://github.com/grindinggear/poe2-skilltree-export
 - Danach bleiben die Baumdaten im lokalen Browser-Cache.
 - Markierte Passivpunkte werden auf diesem Gerät gespeichert.
 - GitHub Pages benötigt ein öffentliches Repository, sofern kein kostenpflichtiger Plan für private Pages verwendet wird.
+
+
+## Wichtig bei Update von v0.3
+
+Safari kann die alte Datei im Cache behalten.
+
+1. Die neuen v0.4-Dateien vollständig ins GitHub-Repository hochladen und bestehende Dateien ersetzen.
+2. Danach die Website in Safari öffnen.
+3. Falls weiterhin die alte Version erscheint:
+   - Safari-Tab schließen,
+   - Einstellungen → Apps → Safari → Erweitert → Websitedaten,
+   - den Eintrag `github.io` beziehungsweise die Atlas-Seite löschen,
+   - Seite erneut öffnen.
+4. Oben im Atlas muss `v0.4` stehen.

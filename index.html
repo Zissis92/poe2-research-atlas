@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PoE2 Research Atlas v0.3</title>
+<title>PoE2 Research Atlas v0.4</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#0c1725">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -37,11 +37,28 @@
   .card{margin:8px 0}
 }
 
+
+#mobileMenu,#closeMenu{
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+#menuBackdrop{display:none}
+@media(max-width:760px){
+  #mobileMenu{pointer-events:auto}
+  aside{overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #menuBackdrop{
+    display:block;position:fixed;z-index:19;inset:0;background:rgba(0,0,0,.48);
+    opacity:0;pointer-events:none;transition:opacity .22s ease
+  }
+  #menuBackdrop.open{opacity:1;pointer-events:auto}
+}
+
 </style></head><body>
-<button id="mobileMenu" aria-label="Werkzeuge öffnen">☰</button>
+<div id="menuBackdrop" aria-hidden="true"></div>
+<button id="mobileMenu" type="button" aria-label="Werkzeuge öffnen" aria-controls="sidebar" aria-expanded="false">☰</button>
 <div id="app"><aside id="sidebar">
-<button id="closeMenu" aria-label="Werkzeuge schließen">✕</button>
-<h1>PoE2 Research Atlas <span class="tiny">v0.3</span></h1><div class="sub">Echte GGG-Knoten · Safari-optimiert · Offline-Cache</div>
+<button id="closeMenu" type="button" aria-label="Werkzeuge schließen">✕</button>
+<h1>PoE2 Research Atlas <span class="tiny">v0.4</span></h1><div class="sub">Echte GGG-Knoten · Safari-optimiert · Offline-Cache</div>
 <div class="card"><b>Datenquelle</b><div id="status" class="warn" style="margin-top:6px">Prüfe Offline-Cache …</div>
 <button id="online" class="primary" style="margin-top:9px">GGG-Baum laden</button>
 <button id="download" style="margin-top:7px">Offizielles data.json herunterladen</button>
@@ -84,12 +101,35 @@ $('online').onclick=async()=>{try{status('Lade offiziellen GGG-Export …','warn
 $('setStart').onclick=()=>{start=selected;$('startLabel').textContent=name(nodes.get(start),start);$('route').disabled=!target};$('setTarget').onclick=()=>{target=selected;$('targetLabel').textContent=name(nodes.get(target),target);$('route').disabled=!(start||owned.size)};$('toggleOwned').onclick=()=>{owned.has(selected)?owned.delete(selected):owned.add(selected);draw()};$('route').onclick=()=>{let best=[];if(start)best=bfs(start,target);else for(const o of owned){const p=bfs(o,target);if(p.length&&(!best.length||p.length<best.length))best=p}route=best;$('routeInfo').textContent=route.length?`${route.length-1} Schritte · ${route.length} Knoten inkl. Start/Ziel`:'Kein Weg gefunden.';draw()};$('clearRoute').onclick=()=>{route=[];$('routeInfo').textContent='';draw()};$('saveOwned').onclick=()=>{localStorage.setItem('poe2-owned',JSON.stringify([...owned]));status('Passivpfad lokal gespeichert.','ok')};$('clearOwned').onclick=()=>{if(confirm('Markierten Pfad löschen?')){owned.clear();localStorage.removeItem('poe2-owned');draw()}};$('fit').onclick=fit;$('focusOwned').onclick=()=>owned.size&&focus([...owned][0],.15);$('clearCache').onclick=async()=>{await cacheClear();data=null;nodes.clear();ctx.clearRect(0,0,canvas.width,canvas.height);$('search').disabled=true;status('Baum-Cache gelöscht. Importiere data.json erneut.','warn');diag('Noch keine Daten.')};
 (async()=>{resize();try{const d=await cacheGet();if(d){normalize(d);status(`Offline-Cache geladen: ${nodes.size.toLocaleString('de-DE')} Knoten`,'ok')}else status('Kein Offline-Cache. Lade online oder importiere data.json.','warn')}catch(e){status('Cache konnte nicht gelesen werden: '+e.message,'err')}})();
 
+
 const sidebar=$('sidebar');
-$('mobileMenu').onclick=()=>sidebar.classList.add('open');
-$('closeMenu').onclick=()=>sidebar.classList.remove('open');
-canvas.addEventListener('click',()=>{if(innerWidth<=760) sidebar.classList.remove('open')});
-if('serviceWorker' in navigator && location.protocol.startsWith('http')){
-  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+const mobileMenu=$('mobileMenu');
+const closeMenu=$('closeMenu');
+const menuBackdrop=$('menuBackdrop');
+
+function setMenu(open){
+  sidebar.classList.toggle('open',open);
+  menuBackdrop.classList.toggle('open',open);
+  mobileMenu.setAttribute('aria-expanded',open?'true':'false');
 }
+function openMenu(e){
+  if(e){e.preventDefault();e.stopPropagation();}
+  setMenu(true);
+}
+function shutMenu(e){
+  if(e){e.preventDefault();e.stopPropagation();}
+  setMenu(false);
+}
+mobileMenu.addEventListener('click',openMenu);
+mobileMenu.addEventListener('touchend',openMenu,{passive:false});
+closeMenu.addEventListener('click',shutMenu);
+closeMenu.addEventListener('touchend',shutMenu,{passive:false});
+menuBackdrop.addEventListener('click',shutMenu);
+menuBackdrop.addEventListener('touchend',shutMenu,{passive:false});
+
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('./sw.js?v=0.4').catch(()=>{});
+}
+
 
 </script></body></html>
