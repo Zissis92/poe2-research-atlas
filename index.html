@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>PoE2 Research Atlas v0.6</title>
+<title>PoE2 Research Atlas v0.7</title>
 <link rel="manifest" href="./manifest.webmanifest">
 <meta name="theme-color" content="#0c1725">
 <meta name="apple-mobile-web-app-capable" content="yes">
@@ -58,7 +58,7 @@
 <button id="mobileMenu" type="button" aria-label="Werkzeuge öffnen" aria-controls="sidebar" aria-expanded="false">☰</button>
 <div id="app"><aside id="sidebar">
 <button id="closeMenu" type="button" aria-label="Werkzeuge schließen">✕</button>
-<h1>PoE2 Research Atlas <span class="tiny">v0.6</span></h1><div class="sub">Echte GGG-Knoten · Safari-optimiert · Offline-Cache</div>
+<h1>PoE2 Research Atlas <span class="tiny">v0.7</span></h1><div class="sub">Echte GGG-Knoten · Safari-optimiert · Offline-Cache</div>
 <div class="card"><b>Datenquelle</b><div id="status" class="warn" style="margin-top:6px">Prüfe Offline-Cache …</div>
 <button id="online" class="primary" style="margin-top:9px">GGG-Baum laden</button>
 <button id="download" style="margin-top:7px">Offizielles data.json herunterladen</button>
@@ -104,21 +104,12 @@ function buildGroupIndex(d){
   }
 }
 function calc(n){
-  const gid=n.group!=null?String(n.group):nodeGroups.get(String(n.id));
-  const g=gid!=null?rawGroups(data)[gid]:null;
-  const gx=Number(g?.x ?? n.x);
-  const gy=Number(g?.y ?? n.y);
-  if(!Number.isFinite(gx)||!Number.isFinite(gy))return null;
-  if(n.orbit==null||n.orbitIndex==null)return{x:gx,y:gy};
-  const constants=data.constants||data.tree?.constants||{};
-  const rs=constants.orbitRadii||fallbackR;
-  const cs=constants.skillsPerOrbit||[1,6,12,12,40,40,40,40,40,40,40,40];
-  const orbit=Number(n.orbit),idx=Number(n.orbitIndex);
-  const r=Number(rs[orbit] ?? fallbackR[orbit] ?? orbit*180);
-  const count=Number(cs[orbit] ?? 40);
-  if(!Number.isFinite(r)||!Number.isFinite(count)||count<=0)return null;
-  const angle=2*Math.PI*idx/count;
-  return{x:gx+Math.sin(angle)*r,y:gy-Math.cos(angle)*r};
+  // Der offizielle PoE2-Export enthält bereits absolute Weltkoordinaten.
+  // Gruppen-/Orbitdaten beschreiben das ursprüngliche Layoutmodell, dürfen
+  // aber nicht nochmals auf bereits berechnete x/y-Werte angewendet werden.
+  const x=Number(n.x),y=Number(n.y);
+  if(Number.isFinite(x)&&Number.isFinite(y))return{x,y};
+  return null;
 }
 function normalize(d){
   data=d;nodes.clear();positions.clear();adj.clear();visibleNodes.clear();
@@ -136,18 +127,31 @@ function normalize(d){
       visibleNodes.add(id);
     }else missingPosition++;
   }
-  for(const [id,n] of nodes){
-    let links=[...arrays(n.out),...arrays(n.in),...arrays(n.connections),...arrays(n.adjacent),...arrays(n.linked)];
-    for(const v of links){
-      const o=String(typeof v==='object'?(v.id??v.node??''):v);
-      if(nodes.has(o)){adj.get(id).add(o);adj.get(o).add(id)}
+  if(Array.isArray(d.edges)&&d.edges.length){
+    for(const e of d.edges){
+      const a=String(e.from??e.a??''),b=String(e.to??e.b??'');
+      if(nodes.has(a)&&nodes.has(b)){adj.get(a).add(b);adj.get(b).add(a)}
+    }
+  }else{
+    for(const [id,n] of nodes){
+      const links=[...arrays(n.out),...arrays(n.in),...arrays(n.connections),...arrays(n.adjacent),...arrays(n.linked)];
+      for(const v of links){
+        const o=String(typeof v==='object'?(v.id??v.node??''):v);
+        if(nodes.has(o)){adj.get(id).add(o);adj.get(o).add(id)}
+      }
     }
   }
   const ps=[...positions.values()];
   if(!ps.length)throw Error('Keine gültigen Knotenpositionen erkannt.');
-  bounds={
+  const measured={
     minX:Math.min(...ps.map(p=>p.x)),maxX:Math.max(...ps.map(p=>p.x)),
     minY:Math.min(...ps.map(p=>p.y)),maxY:Math.max(...ps.map(p=>p.y))
+  };
+  bounds={
+    minX:Number.isFinite(Number(d.min_x))?Number(d.min_x):measured.minX,
+    maxX:Number.isFinite(Number(d.max_x))?Number(d.max_x):measured.maxX,
+    minY:Number.isFinite(Number(d.min_y))?Number(d.min_y):measured.minY,
+    maxY:Number.isFinite(Number(d.max_y))?Number(d.max_y):measured.maxY
   };
   const edges=[...adj.entries()].reduce((s,[id,v])=>s+(visibleNodes.has(id)?[...v].filter(x=>visibleNodes.has(x)).length:0),0)/2;
   diag(`Top-Level-Felder: ${Object.keys(d).join(', ')}
@@ -156,9 +160,11 @@ Darstellbar: ${visibleNodes.size.toLocaleString('de-DE')}
 Ohne Position: ${missingPosition.toLocaleString('de-DE')}
 Verbindungen: ${Math.round(edges).toLocaleString('de-DE')}
 Gruppen: ${Object.keys(rawGroups(d)).length.toLocaleString('de-DE')}
-Gruppenzuordnungen: ${nodeGroups.size.toLocaleString('de-DE')}`);
+Gruppenzuordnungen: ${nodeGroups.size.toLocaleString('de-DE')}
+Koordinatenmodus: absolute node.x / node.y
+Offizielle Grenzen: ${bounds.minX} … ${bounds.maxX} / ${bounds.minY} … ${bounds.maxY}`);
   $('search').disabled=false;
-  status(`Original-Layout aktiv: ${visibleNodes.size.toLocaleString('de-DE')} Knoten`,'ok');
+  status(`Absolute GGG-Koordinaten aktiv: ${visibleNodes.size.toLocaleString('de-DE')} Knoten`,'ok');
   fit();draw();
 }
 async function ingest(d,cache=true){if(!d||typeof d!=='object')throw Error('Ungültiges JSON.');normalize(d);if(cache){status('Speichere Baum offline …','warn');await cacheSet(d);status(`Baum offline gespeichert: ${nodes.size.toLocaleString('de-DE')} Knoten`,'ok')}}

@@ -1,4 +1,4 @@
-const CACHE='poe2-atlas-v0.6';
+const CACHE='poe2-atlas-v0.7';
 const FILES=['./','./index.html','./manifest.webmanifest'];
 self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(FILES))));
 self.addEventListener('activate',e=>e.waitUntil(

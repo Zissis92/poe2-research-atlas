@@ -1,4 +1,4 @@
-# PoE2 Research Atlas v0.6
+# PoE2 Research Atlas v0.7
 
 Diese Version ist für GitHub Pages und Safari auf dem iPhone vorbereitet.
 
@@ -48,27 +48,27 @@ https://github.com/grindinggear/poe2-skilltree-export
 
 Safari kann die alte Datei im Cache behalten.
 
-1. Die neuen v0.6-Dateien vollständig ins GitHub-Repository hochladen und bestehende Dateien ersetzen.
+1. Die neuen v0.7-Dateien vollständig ins GitHub-Repository hochladen und bestehende Dateien ersetzen.
 2. Danach die Website in Safari öffnen.
 3. Falls weiterhin die alte Version erscheint:
    - Safari-Tab schließen,
    - Einstellungen → Apps → Safari → Erweitert → Websitedaten,
    - den Eintrag `github.io` beziehungsweise die Atlas-Seite löschen,
    - Seite erneut öffnen.
-4. Oben im Atlas muss `v0.6` stehen.
+4. Oben im Atlas muss `v0.7` stehen.
 
 
-## Fehlerkorrektur v0.6
+## Fehlerkorrektur v0.7
 
 In v0.4 enthielt der Drag-and-drop-Handler einen JavaScript-Syntaxfehler.
 Dadurch startete die Anwendung überhaupt nicht und blieb bei
 `Prüfe Offline-Cache …` stehen.
 
-Nach dem Upload muss oben `v0.6` stehen. Falls weiterhin v0.4 erscheint,
+Nach dem Upload muss oben `v0.7` stehen. Falls weiterhin v0.4 erscheint,
 die Seite mit Strg+F5 neu laden oder die Websitedaten der GitHub-Pages-Seite löschen.
 
 
-## Layout-Korrektur v0.6
+## Layout-Korrektur v0.7
 
 Der Renderer ermittelt die Gruppenzuordnung jetzt auf zwei Wegen:
 
@@ -83,3 +83,27 @@ Nach dem Update:
 2. Strg+F5 drücken.
 3. Im Atlas `Baum-Cache löschen`.
 4. `GGG-Baum laden` drücken, damit der Datensatz neu normalisiert wird.
+
+
+## Verifizierte Layout-Korrektur v0.7
+
+Die Korrektur wurde gegen den tatsächlich verwendeten Export getestet.
+
+Erkannte Struktur:
+- Knoten: 5151
+- Knoten mit fertigen x/y-Koordinaten: 5150
+- Gruppen: 1621
+- Kanten: 6074
+- Grenzen: x -22597 bis 21814, y -18720 bis 20053
+
+Wesentliche Änderung:
+- `node.x` und `node.y` werden direkt verwendet.
+- Gruppenmittelpunkt und Orbit werden nicht erneut addiert.
+- Verbindungen werden primär aus dem Top-Level-Feld `edges` gelesen.
+
+Nach dem Upload:
+1. Alle Dateien ersetzen.
+2. Strg+F5.
+3. Baum-Cache löschen.
+4. GGG-Baum neu laden.
+5. Oben muss v0.7 stehen.
