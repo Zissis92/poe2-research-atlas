@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PoE2 Research Atlas v0.3</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#0c1725">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="PoE2 Atlas">
+<style>
+:root{--bg:#060d17;--p:#0c1725;--p2:#111f31;--t:#edf3fb;--m:#91a3b9;--a:#48d8ff;--g:#62e98b;--y:#ffd15c;--r:#ff667a;--l:#30455d}
+*{box-sizing:border-box}html,body{height:100%;margin:0;background:var(--bg);color:var(--t);font-family:Segoe UI,Arial,sans-serif;overflow:hidden}#app{display:grid;grid-template-columns:370px 1fr;height:100%}aside{background:linear-gradient(180deg,var(--p),#08111c);border-right:1px solid #26384d;padding:14px;overflow:auto}h1{font-size:20px;margin:0}.sub,.tiny{font-size:12px;color:var(--m)}.card{background:var(--p2);border:1px solid #293e56;border-radius:12px;padding:12px;margin:10px 0}.row{display:grid;grid-template-columns:1fr 1fr;gap:8px}label{display:block;font-size:12px;color:var(--m);margin:5px 0}input,button{width:100%;border:1px solid #344b65;border-radius:8px;padding:9px;background:#07111e;color:var(--t);font:inherit}button{cursor:pointer;background:#18334e;font-weight:700}button:hover{filter:brightness(1.15)}button.primary{background:#0b6a84;border-color:#33ccec}button.good{background:#17623a;border-color:#45cf82}button:disabled{opacity:.45;cursor:not-allowed}.ok{color:var(--g)}.warn{color:var(--y)}.err{color:var(--r)}code{word-break:break-all}.drop{border:2px dashed #466583;border-radius:10px;padding:14px;text-align:center;margin-top:8px}.drop.over{border-color:var(--a);background:#0b2735}.result{max-height:180px;overflow:auto}.hit{padding:7px;border-bottom:1px solid #283b51;cursor:pointer}.hit:hover{background:#172b42}#viewport{position:relative;overflow:hidden;background:radial-gradient(circle at 50% 45%,#14243b 0,#08111d 48%,#03070d 100%)}canvas{position:absolute;inset:0;width:100%;height:100%;cursor:grab}canvas.drag{cursor:grabbing}#tooltip{position:absolute;display:none;pointer-events:none;max-width:330px;background:#06101dee;border:1px solid #4d6e91;border-radius:8px;padding:9px;font-size:12px;z-index:3}#legend{position:absolute;right:12px;top:12px;background:#06101ddd;border:1px solid #2b415b;border-radius:10px;padding:9px;font-size:11px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.stats{font-size:12px;line-height:1.45;color:#cfdae8}#diag{white-space:pre-wrap;max-height:140px;overflow:auto}
+
+#mobileMenu,#closeMenu{display:none}
+@media(max-width:760px){
+  html,body{overflow:hidden}
+  #app{display:block;height:100dvh}
+  aside{
+    position:fixed;z-index:20;left:0;top:0;bottom:0;width:min(92vw,390px);
+    transform:translateX(-102%);transition:transform .22s ease;
+    box-shadow:12px 0 40px #000b;padding-top:48px
+  }
+  aside.open{transform:translateX(0)}
+  #viewport{position:absolute;inset:0}
+  #mobileMenu{
+    display:block;position:fixed;z-index:15;left:12px;top:max(12px,env(safe-area-inset-top));
+    width:46px;height:46px;padding:0;border-radius:12px;background:#0b6a84;
+    border:1px solid #48d8ff;font-size:23px
+  }
+  #closeMenu{
+    display:block;position:absolute;right:10px;top:max(8px,env(safe-area-inset-top));
+    width:38px;height:38px;padding:0;background:#172b42
+  }
+  #legend{right:8px;top:max(8px,env(safe-area-inset-top));font-size:10px}
+  input,button{min-height:44px}
+  .card{margin:8px 0}
+}
+
+</style></head><body>
+<button id="mobileMenu" aria-label="Werkzeuge öffnen">☰</button>
+<div id="app"><aside id="sidebar">
+<button id="closeMenu" aria-label="Werkzeuge schließen">✕</button>
+<h1>PoE2 Research Atlas <span class="tiny">v0.3</span></h1><div class="sub">Echte GGG-Knoten · Safari-optimiert · Offline-Cache</div>
+<div class="card"><b>Datenquelle</b><div id="status" class="warn" style="margin-top:6px">Prüfe Offline-Cache …</div>
+<button id="online" class="primary" style="margin-top:9px">GGG-Baum laden</button>
+<button id="download" style="margin-top:7px">Offizielles data.json herunterladen</button>
+<div id="drop" class="drop">data.json hier ablegen<br><span class="tiny">oder Datei auswählen</span><input id="file" type="file" accept=".json,application/json" style="margin-top:8px"></div>
+<div class="tiny" style="margin-top:8px">Nach erfolgreichem Import wird der Datensatz in diesem Browser gespeichert.</div></div>
+<div class="card"><label>Knoten suchen</label><input id="search" placeholder="Remorseless, Ricochet, Projectile …" disabled><div id="results" class="result"></div></div>
+<div class="card"><div id="detailName"><b>Kein Knoten gewählt</b></div><div id="detailMeta" class="tiny"></div><div id="detailStats" class="stats" style="margin-top:7px"></div><div class="row" style="margin-top:9px"><button id="setStart" disabled>Als Start</button><button id="setTarget" disabled>Als Ziel</button></div><button id="toggleOwned" disabled style="margin-top:7px">Besitz umschalten</button></div>
+<div class="card"><label>Start</label><div id="startLabel" class="tiny">nicht gesetzt</div><label>Ziel</label><div id="targetLabel" class="tiny">nicht gesetzt</div><div class="row" style="margin-top:8px"><button id="route" class="good" disabled>Weg berechnen</button><button id="clearRoute">Route löschen</button></div><div id="routeInfo" class="tiny" style="margin-top:6px"></div></div>
+<div class="card"><div class="row"><button id="saveOwned">Pfad speichern</button><button id="clearOwned">Pfad löschen</button></div><div class="row" style="margin-top:8px"><button id="fit">Gesamtbaum</button><button id="focusOwned">Zu Besitz</button></div></div>
+<div class="card"><b>Diagnose</b><div id="diag" class="tiny">Noch keine Daten.</div><button id="clearCache" style="margin-top:8px">Baum-Cache löschen</button></div>
+</aside><main id="viewport"><canvas id="tree"></canvas><div id="tooltip"></div><div id="legend"><div><span class="dot" style="background:#62e98b"></span>vergeben</div><div><span class="dot" style="background:#48d8ff"></span>Route</div><div><span class="dot" style="background:#ffd15c"></span>gewählt</div><div><span class="dot" style="background:#ff667a"></span>Notable/Keystone</div></div></main></div>
+<script>
+'use strict';
+const URL='https://raw.githubusercontent.com/grindinggear/poe2-skilltree-export/main/data.json', DB='poe2-research-atlas', STORE='data', KEY='official-tree';
+const $=id=>document.getElementById(id),canvas=$('tree'),ctx=canvas.getContext('2d'),view=$('viewport');
+let data,nodes=new Map,positions=new Map,adj=new Map,bounds,selected,start,target,route=[],camera={x:0,y:0,scale:.05},dragging=false,last={x:0,y:0};
+let owned=new Set(JSON.parse(localStorage.getItem('poe2-owned')||'[]')); const fallbackR=[0,82,162,335,493,662,846,1043,1251,1470,1698,1935];
+function status(t,c='warn'){$('status').className=c;$('status').textContent=t} function diag(t){$('diag').textContent=t}
+function openDB(){return new Promise((res,rej)=>{const r=indexedDB.open(DB,1);r.onupgradeneeded=()=>r.result.createObjectStore(STORE);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)})}
+async function cacheSet(v){const db=await openDB();await new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).put(v,KEY);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});db.close()}
+async function cacheGet(){const db=await openDB();const v=await new Promise((res,rej)=>{const r=db.transaction(STORE).objectStore(STORE).get(KEY);r.onsuccess=()=>res(r.result);r.onerror=()=>rej(r.error)});db.close();return v}
+async function cacheClear(){const db=await openDB();await new Promise((res,rej)=>{const tx=db.transaction(STORE,'readwrite');tx.objectStore(STORE).delete(KEY);tx.oncomplete=res;tx.onerror=()=>rej(tx.error)});db.close()}
+function rawNodes(d){return d.nodes||d.skills||d.tree?.nodes||{}} function rawGroups(d){return d.groups||d.tree?.groups||{}}
+function arrays(v){return Array.isArray(v)?v:[]}
+function calc(n){const g=rawGroups(data)[n.group]||{},x=Number(g.x||n.x||0),y=Number(g.y||n.y||0);if(n.orbit==null||n.orbitIndex==null)return{x,y};const rs=data.constants?.orbitRadii||fallbackR, cs=data.constants?.skillsPerOrbit||[1,6,12,12,40,40,40,40,40,40,40,40],r=Number(rs[n.orbit]||n.orbit*180),count=Number(cs[n.orbit]||40),a=2*Math.PI*Number(n.orbitIndex)/count-Math.PI/2;return{x:x+r*Math.cos(a),y:y+r*Math.sin(a)}}
+function normalize(d){data=d;nodes.clear();positions.clear();adj.clear();const raw=rawNodes(d);for(const [id0,n0] of Object.entries(raw)){const id=String(id0),n={...n0,id};nodes.set(id,n);positions.set(id,calc(n));adj.set(id,new Set)}for(const [id,n] of nodes){let links=[...arrays(n.out),...arrays(n.in),...arrays(n.connections),...arrays(n.adjacent),...arrays(n.linked)];for(const v of links){const o=String(typeof v==='object'?(v.id??v.node??''):v);if(nodes.has(o)){adj.get(id).add(o);adj.get(o).add(id)}}}const ps=[...positions.values()].filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));if(!ps.length)throw Error('Keine gültigen Knotenpositionen erkannt.');bounds={minX:Math.min(...ps.map(p=>p.x)),maxX:Math.max(...ps.map(p=>p.x)),minY:Math.min(...ps.map(p=>p.y)),maxY:Math.max(...ps.map(p=>p.y))};const edges=[...adj.values()].reduce((s,v)=>s+v.size,0)/2;diag(`Top-Level-Felder: ${Object.keys(d).join(', ')}\nKnoten: ${nodes.size.toLocaleString('de-DE')}\nVerbindungen: ${Math.round(edges).toLocaleString('de-DE')}\nGruppen: ${Object.keys(rawGroups(d)).length.toLocaleString('de-DE')}`);$('search').disabled=false;status(`Baum aktiv: ${nodes.size.toLocaleString('de-DE')} Knoten`,'ok');fit();draw()}
+async function ingest(d,cache=true){if(!d||typeof d!=='object')throw Error('Ungültiges JSON.');normalize(d);if(cache){status('Speichere Baum offline …','warn');await cacheSet(d);status(`Baum offline gespeichert: ${nodes.size.toLocaleString('de-DE')} Knoten`,'ok')}}
+async function parseFile(f){status(`Lese ${f.name} …`,'warn');const t=await f.text();await ingest(JSON.parse(t),true)}
+function resize(){const r=view.getBoundingClientRect(),d=devicePixelRatio;canvas.width=Math.floor(r.width*d);canvas.height=Math.floor(r.height*d);canvas.style.width=r.width+'px';canvas.style.height=r.height+'px';draw()}addEventListener('resize',resize);
+function w2s(p){return{x:(p.x-camera.x)*camera.scale+canvas.width/(2*devicePixelRatio),y:(p.y-camera.y)*camera.scale+canvas.height/(2*devicePixelRatio)}} function s2w(x,y){return{x:(x-canvas.width/(2*devicePixelRatio))/camera.scale+camera.x,y:(y-canvas.height/(2*devicePixelRatio))/camera.scale+camera.y}}
+function rad(n){return n.isKeystone?9:n.isNotable?7:n.isMastery?6:3.2} function stats(n){return n.stats||n.statDescriptions||n.description||[]}
+function draw(){if(!data)return;const d=devicePixelRatio,w=canvas.width/d,h=canvas.height/d;ctx.setTransform(d,0,0,d,0,0);ctx.clearRect(0,0,w,h);ctx.strokeStyle='#263a50';ctx.lineWidth=Math.max(.35,camera.scale/.05);ctx.globalAlpha=.66;for(const [id,n] of nodes){const a=w2s(positions.get(id));if(a.x<-30||a.x>w+30||a.y<-30||a.y>h+30)continue;for(const o of adj.get(id)){if(id>o)continue;const b=w2s(positions.get(o));ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.stroke()}}ctx.globalAlpha=1;if(route.length>1){ctx.strokeStyle='#48d8ff';ctx.lineWidth=4;ctx.shadowColor='#48d8ff';ctx.shadowBlur=8;ctx.beginPath();route.forEach((id,i)=>{const p=w2s(positions.get(id));i?ctx.lineTo(p.x,p.y):ctx.moveTo(p.x,p.y)});ctx.stroke();ctx.shadowBlur=0}for(const [id,n] of nodes){const p=w2s(positions.get(id));if(p.x<-15||p.x>w+15||p.y<-15||p.y>h+15)continue;let fill=(n.isKeystone||n.isNotable)?'#ff667a':'#8295aa';if(owned.has(id))fill='#62e98b';if(route.includes(id))fill='#48d8ff';if(id===selected)fill='#ffd15c';ctx.beginPath();ctx.arc(p.x,p.y,rad(n)*Math.max(.6,Math.min(1.4,camera.scale/.055)),0,Math.PI*2);ctx.fillStyle=fill;ctx.fill();ctx.strokeStyle='#e1ebf6';ctx.lineWidth=.6;ctx.stroke()}}
+function fit(){if(!bounds)return;const w=canvas.width/devicePixelRatio,h=canvas.height/devicePixelRatio;camera.x=(bounds.minX+bounds.maxX)/2;camera.y=(bounds.minY+bounds.maxY)/2;camera.scale=Math.min(w/(bounds.maxX-bounds.minX+900),h/(bounds.maxY-bounds.minY+900));draw()}
+function nearest(x,y,max=17){let b=null,bd=max;for(const id of nodes.keys()){const p=w2s(positions.get(id)),d=Math.hypot(p.x-x,p.y-y);if(d<bd){bd=d;b=id}}return b}
+function name(n,id){return n.name||n.skill||n.displayName||('Knoten '+id)} function show(id){selected=id;const n=nodes.get(id);$('detailName').innerHTML='<b>'+name(n,id)+'</b>';$('detailMeta').textContent=`ID ${id} · ${n.isKeystone?'Keystone':n.isNotable?'Notable':'Small'} · ${adj.get(id).size} Verbindungen`;$('detailStats').innerHTML=(Array.isArray(stats(n))?stats(n):[stats(n)]).map(x=>'• '+x).join('<br>')||'Keine Stat-Zeilen.';['setStart','setTarget','toggleOwned'].forEach(x=>$(x).disabled=false);draw()}
+function focus(id,z=.18){const p=positions.get(id);camera.x=p.x;camera.y=p.y;camera.scale=z;draw()} function bfs(a,b){const q=[a],prev=new Map([[a,null]]);for(let i=0;i<q.length;i++){const x=q[i];if(x===b)break;for(const y of adj.get(x)||[]){if(!prev.has(y)){prev.set(y,x);q.push(y)}}}if(!prev.has(b))return[];const p=[];for(let x=b;x!=null;x=prev.get(x))p.push(x);return p.reverse()}
+canvas.onmousedown=e=>{dragging=true;last={x:e.clientX,y:e.clientY};canvas.classList.add('drag')};addEventListener('mouseup',()=>{dragging=false;canvas.classList.remove('drag')});addEventListener('mousemove',e=>{const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;if(dragging){camera.x-=(e.clientX-last.x)/camera.scale;camera.y-=(e.clientY-last.y)/camera.scale;last={x:e.clientX,y:e.clientY};draw();return}const id=nearest(x,y),tt=$('tooltip');if(id){const n=nodes.get(id);tt.style.display='block';tt.style.left=x+15+'px';tt.style.top=y+15+'px';tt.innerHTML='<b>'+name(n,id)+'</b><br><span class="tiny">'+(Array.isArray(stats(n))?stats(n).slice(0,3).join('<br>'):stats(n))+'</span>'}else tt.style.display='none'});canvas.onclick=e=>{if(Math.hypot(e.clientX-last.x,e.clientY-last.y)>5)return;const r=canvas.getBoundingClientRect(),id=nearest(e.clientX-r.left,e.clientY-r.top);if(id)show(id)};canvas.addEventListener('wheel',e=>{e.preventDefault();const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top,b=s2w(x,y),f=e.deltaY<0?1.14:.88;camera.scale=Math.max(.008,Math.min(.9,camera.scale*f));const a=s2w(x,y);camera.x+=b.x-a.x;camera.y+=b.y-a.y;draw()},{passive:false});
+$('search').oninput=()=>{const q=$('search').value.trim().toLowerCase();$('results').innerHTML='';if(q.length<2)return;let c=0;for(const [id,n] of nodes){const hay=(name(n,id)+' '+(Array.isArray(stats(n))?stats(n).join(' '):stats(n))).toLowerCase();if(hay.includes(q)){const d=document.createElement('div');d.className='hit';d.innerHTML='<b>'+name(n,id)+'</b><br><span class="tiny">'+(Array.isArray(stats(n))?stats(n)[0]||'':stats(n))+'</span>';d.onclick=()=>{show(id);focus(id)};$('results').appendChild(d);if(++c>=50)break}}};
+$('online').onclick=async()=>{try{status('Lade offiziellen GGG-Export …','warn');const r=await fetch(URL,{cache:'no-store'});if(!r.ok)throw Error('HTTP '+r.status);await ingest(await r.json(),true)}catch(e){status('Online-Laden blockiert. Nutze „data.json herunterladen“ und wähle die Datei anschließend aus.\n'+e.message,'err')}};$('download').onclick=()=>window.open(URL,'_blank');$('file').onchange=e=>e.target.files[0]&&parseFile(e.target.files[0]).catch(e=>status('Import fehlgeschlagen: '+e.message,'err'));const drop=$('drop');['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over')}));['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over')}));drop.addEventListener('drop',e=>e.dataTransfer.files[0]&&parseFile(e.dataTransfer.files[0]).catch(er=>status('Import fehlgeschlagen: '+er.message,'err'));
+$('setStart').onclick=()=>{start=selected;$('startLabel').textContent=name(nodes.get(start),start);$('route').disabled=!target};$('setTarget').onclick=()=>{target=selected;$('targetLabel').textContent=name(nodes.get(target),target);$('route').disabled=!(start||owned.size)};$('toggleOwned').onclick=()=>{owned.has(selected)?owned.delete(selected):owned.add(selected);draw()};$('route').onclick=()=>{let best=[];if(start)best=bfs(start,target);else for(const o of owned){const p=bfs(o,target);if(p.length&&(!best.length||p.length<best.length))best=p}route=best;$('routeInfo').textContent=route.length?`${route.length-1} Schritte · ${route.length} Knoten inkl. Start/Ziel`:'Kein Weg gefunden.';draw()};$('clearRoute').onclick=()=>{route=[];$('routeInfo').textContent='';draw()};$('saveOwned').onclick=()=>{localStorage.setItem('poe2-owned',JSON.stringify([...owned]));status('Passivpfad lokal gespeichert.','ok')};$('clearOwned').onclick=()=>{if(confirm('Markierten Pfad löschen?')){owned.clear();localStorage.removeItem('poe2-owned');draw()}};$('fit').onclick=fit;$('focusOwned').onclick=()=>owned.size&&focus([...owned][0],.15);$('clearCache').onclick=async()=>{await cacheClear();data=null;nodes.clear();ctx.clearRect(0,0,canvas.width,canvas.height);$('search').disabled=true;status('Baum-Cache gelöscht. Importiere data.json erneut.','warn');diag('Noch keine Daten.')};
+(async()=>{resize();try{const d=await cacheGet();if(d){normalize(d);status(`Offline-Cache geladen: ${nodes.size.toLocaleString('de-DE')} Knoten`,'ok')}else status('Kein Offline-Cache. Lade online oder importiere data.json.','warn')}catch(e){status('Cache konnte nicht gelesen werden: '+e.message,'err')}})();
+
+const sidebar=$('sidebar');
+$('mobileMenu').onclick=()=>sidebar.classList.add('open');
+$('closeMenu').onclick=()=>sidebar.classList.remove('open');
+canvas.addEventListener('click',()=>{if(innerWidth<=760) sidebar.classList.remove('open')});
+if('serviceWorker' in navigator && location.protocol.startsWith('http')){
+  navigator.serviceWorker.register('./sw.js').catch(()=>{});
+}
+
+</script></body></html>

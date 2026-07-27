@@ -1,0 +1,9 @@
+{
+  "name": "PoE2 Research Atlas",
+  "short_name": "PoE2 Atlas",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#060d17",
+  "theme_color": "#0c1725",
+  "description": "Interaktiver Forschungsatlas für den offiziellen Path of Exile 2 Passivbaum."
+}

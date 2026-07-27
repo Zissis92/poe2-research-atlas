@@ -1,1 +1,44 @@
-# poe2-research-atlas
+# PoE2 Research Atlas v0.3
+
+Diese Version ist für GitHub Pages und Safari auf dem iPhone vorbereitet.
+
+## Veröffentlichung über GitHub Pages
+
+1. Auf github.com anmelden.
+2. Ein neues öffentliches Repository namens `poe2-research-atlas` anlegen.
+3. Im Repository `Add file` → `Upload files` öffnen.
+4. Den INHALT dieses Ordners hochladen:
+   - index.html
+   - manifest.webmanifest
+   - sw.js
+5. `Commit changes` drücken.
+6. `Settings` → `Pages` öffnen.
+7. Unter `Build and deployment`:
+   - Source: `Deploy from a branch`
+   - Branch: `main`
+   - Folder: `/ (root)`
+8. Speichern. Nach kurzer Zeit erscheint die Website unter:
+   `https://DEIN-GITHUB-NAME.github.io/poe2-research-atlas/`
+
+## Erste Benutzung
+
+1. Website in Safari öffnen.
+2. Links oben das Menü öffnen.
+3. `GGG-Baum laden` drücken.
+4. Nach dem Laden wird der Datensatz im Browser gespeichert.
+5. In Safari über Teilen → `Zum Home-Bildschirm` hinzufügen.
+
+## Datenquelle
+
+Die App lädt:
+https://raw.githubusercontent.com/grindinggear/poe2-skilltree-export/main/data.json
+
+Offizielles Repository:
+https://github.com/grindinggear/poe2-skilltree-export
+
+## Hinweise
+
+- Die erste Datenladung benötigt Internet.
+- Danach bleiben die Baumdaten im lokalen Browser-Cache.
+- Markierte Passivpunkte werden auf diesem Gerät gespeichert.
+- GitHub Pages benötigt ein öffentliches Repository, sofern kein kostenpflichtiger Plan für private Pages verwendet wird.
