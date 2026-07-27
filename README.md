@@ -1,4 +1,4 @@
-# PoE2 Research Atlas v0.5
+# PoE2 Research Atlas v0.6
 
 Diese Version ist für GitHub Pages und Safari auf dem iPhone vorbereitet.
 
@@ -48,21 +48,38 @@ https://github.com/grindinggear/poe2-skilltree-export
 
 Safari kann die alte Datei im Cache behalten.
 
-1. Die neuen v0.5-Dateien vollständig ins GitHub-Repository hochladen und bestehende Dateien ersetzen.
+1. Die neuen v0.6-Dateien vollständig ins GitHub-Repository hochladen und bestehende Dateien ersetzen.
 2. Danach die Website in Safari öffnen.
 3. Falls weiterhin die alte Version erscheint:
    - Safari-Tab schließen,
    - Einstellungen → Apps → Safari → Erweitert → Websitedaten,
    - den Eintrag `github.io` beziehungsweise die Atlas-Seite löschen,
    - Seite erneut öffnen.
-4. Oben im Atlas muss `v0.5` stehen.
+4. Oben im Atlas muss `v0.6` stehen.
 
 
-## Fehlerkorrektur v0.5
+## Fehlerkorrektur v0.6
 
 In v0.4 enthielt der Drag-and-drop-Handler einen JavaScript-Syntaxfehler.
 Dadurch startete die Anwendung überhaupt nicht und blieb bei
 `Prüfe Offline-Cache …` stehen.
 
-Nach dem Upload muss oben `v0.5` stehen. Falls weiterhin v0.4 erscheint,
+Nach dem Upload muss oben `v0.6` stehen. Falls weiterhin v0.4 erscheint,
 die Seite mit Strg+F5 neu laden oder die Websitedaten der GitHub-Pages-Seite löschen.
+
+
+## Layout-Korrektur v0.6
+
+Der Renderer ermittelt die Gruppenzuordnung jetzt auf zwei Wegen:
+
+- direkt über `node.group`
+- über die in jeder Gruppe enthaltene Knotenliste
+
+Knoten ohne belastbare Position werden nicht mehr bei 0/0 übereinander gezeichnet.
+Die Diagnose zeigt nun `Darstellbar`, `Ohne Position` und `Gruppenzuordnungen`.
+
+Nach dem Update:
+1. Alte Dateien im Repository ersetzen.
+2. Strg+F5 drücken.
+3. Im Atlas `Baum-Cache löschen`.
+4. `GGG-Baum laden` drücken, damit der Datensatz neu normalisiert wird.
