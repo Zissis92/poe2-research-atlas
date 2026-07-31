@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "build_candidate.schema.json",
+  "title": "PoE2 build research candidate",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "status",
+    "core_skill_ids",
+    "scores",
+    "evidence"
+  ],
+  "properties": {
+    "id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "idea",
+        "data_review",
+        "in_game_test",
+        "validated",
+        "rejected"
+      ]
+    },
+    "core_skill_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "scores": {
+      "type": "object"
+    },
+    "hypothesis": {
+      "type": "string"
+    },
+    "failure_modes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    }
+  }
+}

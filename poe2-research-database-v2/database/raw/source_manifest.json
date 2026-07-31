@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-07-31",
+  "sources": [
+    {
+      "id": "ggg_poe2_passive_tree",
+      "type": "official",
+      "publisher": "Grinding Gear Games",
+      "url": "https://raw.githubusercontent.com/grindinggear/poe2-skilltree-export/main/data.json",
+      "target": "database/raw/passive_tree.json",
+      "scope": [
+        "passive_tree",
+        "ascendancy_tree"
+      ],
+      "notes": "Official exported passive skill tree data."
+    },
+    {
+      "id": "repoe_poe2_active_gems",
+      "type": "extracted",
+      "publisher": "RePoE fork",
+      "url": "https://repoe-fork.github.io/poe2/Metadata/Items/Gems/ActiveSkillGem.json",
+      "target": "database/raw/active_skill_gems.json",
+      "scope": [
+        "active_skill_gems"
+      ],
+      "notes": "Extracted game data; schema may change."
+    },
+    {
+      "id": "repoe_poe2_support_gems",
+      "type": "extracted",
+      "publisher": "RePoE fork",
+      "url": "https://repoe-fork.github.io/poe2/Metadata/Items/Gems/SupportSkillGem.json",
+      "target": "database/raw/support_skill_gems.json",
+      "scope": [
+        "support_gems"
+      ],
+      "notes": "Extracted game data; schema may change."
+    },
+    {
+      "id": "repoe_poe2_meta_gems",
+      "type": "extracted",
+      "publisher": "RePoE fork",
+      "url": "https://repoe-fork.github.io/poe2/Metadata/Items/Gems/MetaSkillGem.json",
+      "target": "database/raw/meta_skill_gems.json",
+      "scope": [
+        "meta_skill_gems"
+      ],
+      "notes": "Extracted game data; schema may change."
+    }
+  ]
+}

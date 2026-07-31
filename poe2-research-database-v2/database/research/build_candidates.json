@@ -1,0 +1,60 @@
+{
+  "version": "1.0.0",
+  "records": [
+    {
+      "id": "spark_gemling_benchmark",
+      "name": "Spark Gemling benchmark",
+      "status": "data_review",
+      "core_skill_ids": [
+        "spark"
+      ],
+      "hypothesis": "Use as the performance and usability benchmark that experimental candidates must beat or meaningfully differentiate from.",
+      "scores": {},
+      "failure_modes": [
+        "May dominate candidates because its established scaling is better documented."
+      ],
+      "evidence": [
+        {
+          "type": "benchmark",
+          "status": "pending"
+        }
+      ]
+    },
+    {
+      "id": "permafrost_crossbow_campaign",
+      "name": "Permafrost Crossbow campaign baseline",
+      "status": "in_game_test",
+      "core_skill_ids": [
+        "permafrost_bolts",
+        "fragmentation_rounds"
+      ],
+      "hypothesis": "Campaign baseline for low-input crossbow gameplay and later comparison with Gemling quality interactions.",
+      "scores": {},
+      "failure_modes": [
+        "Boss damage may fall behind campaign clear.",
+        "Crossbow or ammunition dependency may constrain scaling."
+      ],
+      "evidence": [
+        {
+          "type": "user_test",
+          "status": "active"
+        }
+      ]
+    },
+    {
+      "id": "ball_lightning_gemling",
+      "name": "Ball Lightning Gemling",
+      "status": "idea",
+      "core_skill_ids": [
+        "ball_lightning"
+      ],
+      "hypothesis": "High hit-frequency projectile mechanics may create quality and support scaling opportunities.",
+      "scores": {},
+      "failure_modes": [
+        "Unverified current quality interaction.",
+        "May require positioning or secondary setup."
+      ],
+      "evidence": []
+    }
+  ]
+}

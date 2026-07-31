@@ -1,0 +1,93 @@
+{
+  "database_version": "2.0.0",
+  "created_at": "2026-07-31",
+  "game": "Path of Exile 2",
+  "purpose": "Theorycrafting research graph and build-discovery foundation",
+  "status": "core-engine",
+  "data_policy": {
+    "unknown_values": "null",
+    "no_invented_game_values": true,
+    "provenance_required": true,
+    "hypotheses_separated": true,
+    "generated_files_reproducible": true
+  },
+  "entity_id_policy": "lowercase stable ids using a-z, 0-9, dot, underscore, colon or hyphen",
+  "datasets": [
+    {
+      "id": "skills",
+      "path": "database/normalized/skills.json",
+      "schema": "schemas/skill.schema.json"
+    },
+    {
+      "id": "support_gems",
+      "path": "database/normalized/support_gems.json",
+      "schema": "schemas/support_gem.schema.json"
+    },
+    {
+      "id": "spirit_gems",
+      "path": "database/normalized/spirit_gems.json",
+      "schema": "schemas/spirit_gem.schema.json"
+    },
+    {
+      "id": "ascendancies",
+      "path": "database/normalized/ascendancies.json",
+      "schema": "schemas/ascendancy.schema.json"
+    },
+    {
+      "id": "passives",
+      "path": "database/normalized/passives.json",
+      "schema": "schemas/passive.schema.json"
+    },
+    {
+      "id": "uniques",
+      "path": "database/normalized/uniques.json",
+      "schema": "schemas/unique.schema.json"
+    },
+    {
+      "id": "item_bases",
+      "path": "database/normalized/item_bases.json"
+    },
+    {
+      "id": "modifiers",
+      "path": "database/normalized/modifiers.json",
+      "schema": "schemas/modifier.schema.json"
+    },
+    {
+      "id": "mechanics",
+      "path": "database/normalized/mechanics.json",
+      "schema": "schemas/mechanic.schema.json"
+    },
+    {
+      "id": "tags",
+      "path": "database/normalized/tags.json",
+      "schema": "schemas/tag.schema.json"
+    },
+    {
+      "id": "monsters",
+      "path": "database/normalized/monsters.json"
+    },
+    {
+      "id": "bosses",
+      "path": "database/normalized/bosses.json"
+    },
+    {
+      "id": "interactions",
+      "path": "database/normalized/interactions.json",
+      "schema": "schemas/interaction.schema.json"
+    },
+    {
+      "id": "patches",
+      "path": "database/normalized/patches.json",
+      "schema": "schemas/patch.schema.json"
+    },
+    {
+      "id": "experiments",
+      "path": "database/research/experiments.json",
+      "schema": "schemas/experiment.schema.json"
+    },
+    {
+      "id": "hypotheses",
+      "path": "database/research/hypotheses.json"
+    }
+  ]
+}

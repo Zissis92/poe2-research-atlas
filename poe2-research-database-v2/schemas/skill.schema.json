@@ -1,0 +1,198 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Normalized active or meta skill",
+  "type": "object",
+  "required": [
+    "id",
+    "name",
+    "kind",
+    "tags",
+    "provenance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._:-]*$"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    },
+    "kind": {
+      "enum": [
+        "attack",
+        "spell",
+        "minion",
+        "meta",
+        "reservation",
+        "movement",
+        "buff",
+        "other"
+      ]
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "weapon_restrictions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "uniqueItems": true
+    },
+    "resource_cost": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      }
+    },
+    "damage": {
+      "type": "object",
+      "properties": {
+        "base_types": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "hit": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "dot": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "conversion": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "delivery": {
+      "type": "object",
+      "properties": {
+        "projectiles": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "area": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        },
+        "duration": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "cooldown": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "reload_related": {
+          "type": [
+            "boolean",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "modifier_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "mechanic_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "quality": {
+      "type": "object"
+    },
+    "automation": {
+      "type": "object"
+    }
+  },
+  "$defs": {
+    "provenance": {
+      "type": "object",
+      "required": [
+        "confidence",
+        "sources"
+      ],
+      "properties": {
+        "confidence": {
+          "enum": [
+            "official",
+            "extracted",
+            "verified_manual",
+            "community",
+            "hypothesis"
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "verified_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "game_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

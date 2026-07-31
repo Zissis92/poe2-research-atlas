@@ -1,0 +1,138 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Directed interaction edge",
+  "type": "object",
+  "required": [
+    "id",
+    "from_id",
+    "to_id",
+    "relation",
+    "status",
+    "provenance"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9._:-]*$"
+    },
+    "from_id": {
+      "type": "string"
+    },
+    "to_id": {
+      "type": "string"
+    },
+    "relation": {
+      "enum": [
+        "has_tag",
+        "supports",
+        "cannot_support",
+        "requires",
+        "enables",
+        "disables",
+        "modifies",
+        "converts_to",
+        "triggers",
+        "creates",
+        "consumes",
+        "scales_with",
+        "grants",
+        "conflicts_with",
+        "synergizes_with",
+        "tested_with",
+        "derived_from"
+      ]
+    },
+    "status": {
+      "enum": [
+        "confirmed",
+        "inferred",
+        "hypothesis",
+        "disproved",
+        "patch_dependent"
+      ]
+    },
+    "conditions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "effect": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "weight": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": -100,
+      "maximum": 100
+    },
+    "patch_min": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "patch_max": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "provenance": {
+      "$ref": "#/$defs/provenance"
+    }
+  },
+  "$defs": {
+    "provenance": {
+      "type": "object",
+      "required": [
+        "confidence",
+        "sources"
+      ],
+      "properties": {
+        "confidence": {
+          "enum": [
+            "official",
+            "extracted",
+            "verified_manual",
+            "community",
+            "hypothesis"
+          ]
+        },
+        "sources": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "verified_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "game_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}

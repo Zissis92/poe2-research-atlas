@@ -1,0 +1,50 @@
+{
+  "skill_by_id": {
+    "spark": "Spark",
+    "permafrost_bolts": "Permafrost Bolts",
+    "fragmentation_rounds": "Fragmentation Rounds",
+    "ball_lightning": "Ball Lightning",
+    "arc": "Arc"
+  },
+  "skill_ids_by_tag": {
+    "ammunition": [
+      "fragmentation_rounds",
+      "permafrost_bolts"
+    ],
+    "area": [
+      "ball_lightning"
+    ],
+    "attack": [
+      "fragmentation_rounds",
+      "permafrost_bolts"
+    ],
+    "chaining": [
+      "arc"
+    ],
+    "cold": [
+      "permafrost_bolts"
+    ],
+    "lightning": [
+      "arc",
+      "ball_lightning",
+      "spark"
+    ],
+    "projectile": [
+      "ball_lightning",
+      "fragmentation_rounds",
+      "permafrost_bolts",
+      "spark"
+    ],
+    "spell": [
+      "arc",
+      "ball_lightning",
+      "spark"
+    ]
+  },
+  "skill_ids_by_weapon": {
+    "crossbow": [
+      "fragmentation_rounds",
+      "permafrost_bolts"
+    ]
+  }
+}
